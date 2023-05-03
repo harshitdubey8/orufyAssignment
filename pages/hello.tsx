@@ -1,5 +1,5 @@
 import { dummyData, DummyData, filters } from "./dummydata";
-import { useState, ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import Card from "./Card";
 import Filter from "./Filter";
 import DropDown from "./DropDown";
@@ -35,21 +35,6 @@ function Home() {
       const updatedState = prevState.map((item) =>
         item.value === value ? { value, checked } : item
       );
-      setProducts(
-        dummyData.filter((data) => {
-          let includeData = false;
-          const checkedFilter = updatedState.filter((item) => item.checked);
-          if (!checkedFilter.length) return true;
-          checkedFilter.forEach((item) => {
-            if (!includeData) {
-              includeData = data.category
-                .toLowerCase()
-                .includes(item.value.toLowerCase());
-            }
-          });
-          return includeData;
-        })
-      );
       return updatedState;
     });
   };
@@ -58,19 +43,6 @@ function Home() {
     setPrice((prevState) => {
       const updatedState = prevState.map((item) =>
         item.value === value ? { value, checked } : item
-      );
-      setProducts(
-        dummyData.filter((data) => {
-          let includeData = false;
-          const checkedFilter = updatedState.filter((item) => item.checked);
-          if (!checkedFilter.length) return true;
-          checkedFilter.forEach((item) => {
-            if (!includeData) {
-              includeData = data.price < Number(item.value);
-            }
-          });
-          return includeData;
-        })
       );
       return updatedState;
     });
@@ -82,22 +54,58 @@ function Home() {
       const updatedState = prevState.map((item) =>
         item.value === value ? { value, checked } : item
       );
-      setProducts(
-        dummyData.filter((data) => {
-          let includeData = false;
-          const checkedFilter = updatedState.filter((item) => item.checked);
-          if (!checkedFilter.length) return true;
-          checkedFilter.forEach((item) => {
-            if (!includeData) {
-              includeData = data.rating <= Number(item.value);
-            }
-          });
-          return includeData;
-        })
-      );
       return updatedState;
     });
   };
+
+  const handlerFilter = () => {
+    const filteredProducts = dummyData.filter((data) => {
+      let includeCategory = false,
+        includePrice = false,
+        includeRating = false;
+      const checkedCategories = category.filter((item) => item.checked);
+      const checkedPrices = price.filter((item) => item.checked);
+      const checkedRatings = rating.filter((item) => item.checked);
+      if (
+        !checkedCategories.length &&
+        !checkedPrices.length &&
+        !checkedRatings.length
+      )
+        return true;
+      if (!checkedCategories.length) {
+        includeCategory = true;
+      }
+      if (!checkedPrices.length) {
+        includePrice = true;
+      }
+      if (!checkedRatings.length) {
+        includeRating = true;
+      }
+      checkedCategories.forEach((item) => {
+        if (!includeCategory) {
+          includeCategory = data.category
+            .toLowerCase()
+            .includes(item.value.toLowerCase());
+        }
+      });
+      checkedRatings.forEach((item) => {
+        if (!includeRating) {
+          includeRating = data.rating <= Number(item.value);
+        }
+      });
+      checkedPrices.forEach((item) => {
+        if (!includePrice) {
+          includePrice = data.price < Number(item.value);
+        }
+      });
+      return includeCategory && includeRating && includePrice;
+    });
+    setProducts(filteredProducts);
+  };
+
+  useEffect(() => {
+    handlerFilter();
+  }, [category, price, rating]);
 
   return (
     <div className={HomeStyles.mainWrapper}>
