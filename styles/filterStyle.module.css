@@ -1,0 +1,26 @@
+.filerContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 0.15;
+}
+
+.checkBoxContainer {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-top: 1px solid black;
+  padding: 20px;
+}
+
+.inputContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filterHeading {
+  display: flex;
+  background-color: white;
+  padding: 20px;
+  justify-content: space-between;
+}
