@@ -25,7 +25,9 @@ function Home() {
     const { value } = event.target;
     setSearch(value);
     setProducts(
-      dummyData.filter((data) => data.name.toLowerCase().includes(value))
+      dummyData.filter((data) =>
+        data.name.toLowerCase().includes(value.toLowerCase())
+      )
     );
   };
 
